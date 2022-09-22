@@ -1,51 +1,13 @@
 mod ensure_index;
+mod local_esclient;
 mod produce;
 
-use anyhow::{anyhow, Result};
-use elasticsearch::{
-    auth::Credentials,
-    http::{
-        transport::{SingleNodeConnectionPool, TransportBuilder},
-        Url,
-    },
-    Elasticsearch,
-};
+use anyhow::Result;
+use elasticsearch::{auth::Credentials, http::Url};
 
 use ensure_index::EnsureIndex;
+use local_esclient::LocalElasticsearchBuilder;
 use produce::produce;
-
-#[derive(Default)]
-struct LocalElasticsearchBuilder {
-    credentials: Option<Credentials>,
-    url: Option<Url>,
-}
-
-impl LocalElasticsearchBuilder {
-    pub fn credentials(mut self, credentials: Credentials) -> Self {
-        self.credentials = Some(credentials);
-
-        self
-    }
-
-    pub fn url(mut self, url: Url) -> Self {
-        self.url = Some(url);
-
-        self
-    }
-
-    pub fn build(self) -> Result<Elasticsearch> {
-        let url = self.url.ok_or(anyhow!("missing url"))?;
-        let credentials = self.credentials.ok_or(anyhow!("missing credentials"))?;
-
-        let conn_pool = SingleNodeConnectionPool::new(url);
-
-        let transport = TransportBuilder::new(conn_pool).auth(credentials).build()?;
-
-        let client = Elasticsearch::new(transport);
-
-        Ok(client)
-    }
-}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
