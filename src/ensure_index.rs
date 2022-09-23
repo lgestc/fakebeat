@@ -27,7 +27,7 @@ impl<'a> EnsureIndex<'a> {
     }
 
     async fn drop_index(&self, index: &str) -> Result<()> {
-        println!("dropping index \"{}\"", index);
+        println!("Dropping \"{}\"", index);
 
         self.client
             .indices()
@@ -39,7 +39,7 @@ impl<'a> EnsureIndex<'a> {
     }
 
     async fn create_index(&self, index: &str) -> Result<()> {
-        println!("creating index \"{}\"", index);
+        println!("Creating \"{}\"", index);
 
         self.client
             .indices()

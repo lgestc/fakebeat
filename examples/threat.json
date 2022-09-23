@@ -1,0 +1,9 @@
+{
+  "@timestamp": "{{date}}",
+  "threat.indicator.first_seen": "{{date}}",
+  "threat.feed.name": "rust_fakebeat",
+  "threat.indicator.type": "url",
+  "threat.indicator.url.full": "http://rust.dev",
+  "event.type": "indicator",
+  "event.category": "threat"
+}
