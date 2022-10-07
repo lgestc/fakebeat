@@ -3,6 +3,10 @@ use elasticsearch::{
     http::{request::JsonBody, response::Response},
     BulkParts, Elasticsearch,
 };
+use fake::{
+    faker::internet::en::{DomainSuffix, Username},
+    Fake,
+};
 use rand::Rng;
 
 use anyhow::Result;
@@ -35,6 +39,14 @@ fn random_iso_date() -> String {
     dt.format(FORMAT_ISO).to_string()
 }
 
+fn random_username() -> String {
+    Username().fake()
+}
+
+fn random_domain() -> String {
+    DomainSuffix().fake()
+}
+
 /// Insert documents in bulk
 pub async fn insert_batch(
     client: &Elasticsearch,
@@ -50,6 +62,8 @@ pub async fn insert_batch(
 
         let compiled_body = document_template
             .to_string()
+            .replace("{username}", &random_username())
+            .replace("{domain}", &random_domain())
             .replace("{date.iso}", &random_iso_date());
 
         let parsed: serde_json::Value = serde_json::from_str(&compiled_body)?;

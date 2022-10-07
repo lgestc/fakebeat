@@ -2,9 +2,9 @@
   "template": {
     "@timestamp": "{date.iso}",
     "threat.indicator.first_seen": "{date.iso}",
-    "threat.feed.name": "rust_fakebeat",
+    "threat.feed.name": "{username}",
     "threat.indicator.type": "url",
-    "threat.indicator.url.full": "http://rust.dev",
+    "threat.indicator.url.full": "http://{domain}.{domain}",
     "event.type": "indicator",
     "event.category": "threat"
   },
