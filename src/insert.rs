@@ -39,25 +39,27 @@ fn random_iso_date() -> String {
 pub async fn insert_batch(
     client: &Elasticsearch,
     index: &str,
-    document: &serde_json::Value,
+    document_template: &serde_json::Value,
     batch_size: usize,
 ) -> Result<Response> {
-    let mut body: Vec<JsonBody<serde_json::Value>> = Vec::with_capacity(batch_size * 2);
+    let mut operations: Vec<JsonBody<serde_json::Value>> = Vec::with_capacity(batch_size * 2);
 
     for _ in 0..batch_size {
         // read document from file
-        body.push(json!({"index": {"_id": generate_id().as_str()}}).into());
+        operations.push(json!({"index": {"_id": generate_id().as_str()}}).into());
 
-        let body_with_replacements = document
+        let compiled_body = document_template
             .to_string()
             .replace("{date.iso}", &random_iso_date());
 
-        body.push(json!(body_with_replacements).into())
+        let parsed: serde_json::Value = serde_json::from_str(&compiled_body)?;
+
+        operations.push(parsed.into());
     }
 
     let response = client
         .bulk(BulkParts::Index(index))
-        .body(body)
+        .body(operations)
         .send()
         .await?;
 
