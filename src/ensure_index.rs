@@ -3,7 +3,6 @@ use elasticsearch::{
     indices::{IndicesCreateParts, IndicesDeleteParts, IndicesExistsParts},
     Elasticsearch,
 };
-use serde_json::json;
 
 /// Creates (dropping previous one optionally) or returns existing index do append fake logs to
 pub struct EnsureIndex<'a> {
@@ -38,38 +37,32 @@ impl<'a> EnsureIndex<'a> {
         Ok(())
     }
 
-    async fn create_index(&self, index: &str) -> Result<()> {
+    async fn create_index(&self, index: &str, payload: &serde_json::Value) -> Result<()> {
         println!("Creating \"{}\"", index);
 
         self.client
             .indices()
             .create(IndicesCreateParts::Index(index))
-            .body(json!({
-              "mappings": {
-                "properties": {
-                  "threat.indicator.type": { "type": "keyword" },
-                  "threat.feed.name": { "type": "keyword" },
-                  "threat.indicator.url.full": { "type": "keyword" },
-                  "threat.indicator.first_seen": { "type": "date" },
-                  "@timestamp": { "type": "date" }
-                }
-              }
-            }))
+            .body(payload)
             .send()
             .await?;
 
         Ok(())
     }
 
-    pub async fn ensure_index(&self, index: &str, create: bool) -> Result<()> {
+    pub async fn ensure_index(
+        &self,
+        index: &str,
+        payload: Option<&serde_json::Value>,
+    ) -> Result<()> {
         let index_exists = self.exists(index).await?;
 
         if index_exists {
-            if create {
+            if payload.is_some() {
                 self.drop_index(index).await?;
-                self.create_index(index).await?;
+                self.create_index(index, payload.unwrap()).await?;
             }
-        } else if !create {
+        } else if payload.is_none() {
             return Err(anyhow!("index does not exist and it was not created!"));
         }
 

@@ -1,0 +1,22 @@
+{
+  "template": {
+    "@timestamp": "{date.iso}",
+    "threat.indicator.first_seen": "{date.iso}",
+    "threat.feed.name": "rust_fakebeat",
+    "threat.indicator.type": "url",
+    "threat.indicator.url.full": "http://rust.dev",
+    "event.type": "indicator",
+    "event.category": "threat"
+  },
+  "index": {
+    "mappings": {
+      "properties": {
+        "threat.indicator.type": { "type": "keyword" },
+        "threat.feed.name": { "type": "keyword" },
+        "threat.indicator.url.full": { "type": "keyword" },
+        "threat.indicator.first_seen": { "type": "date" },
+        "@timestamp": { "type": "date" }
+      }
+    }
+  }
+}

@@ -1,5 +1,8 @@
 use anyhow::Ok;
-use elasticsearch::{http::request::JsonBody, BulkParts, Elasticsearch};
+use elasticsearch::{
+    http::{request::JsonBody, response::Response},
+    BulkParts, Elasticsearch,
+};
 use rand::Rng;
 
 use anyhow::Result;
@@ -33,32 +36,30 @@ fn random_iso_date() -> String {
 }
 
 /// Insert documents in bulk
-pub async fn insert_batch(client: &Elasticsearch, index: &str, batch_size: usize) -> Result<()> {
+pub async fn insert_batch(
+    client: &Elasticsearch,
+    index: &str,
+    document: &serde_json::Value,
+    batch_size: usize,
+) -> Result<Response> {
     let mut body: Vec<JsonBody<serde_json::Value>> = Vec::with_capacity(batch_size * 2);
 
     for _ in 0..batch_size {
-        let random_date = random_iso_date();
-
+        // read document from file
         body.push(json!({"index": {"_id": generate_id().as_str()}}).into());
-        body.push(
-            json!({
-                "@timestamp": random_date,
-                "threat.indicator.first_seen": random_date,
-                "threat.feed.name": "rust_fakebeat",
-                "threat.indicator.type": "url",
-                "threat.indicator.url.full": "http://rust.dev",
-                "event.type": "indicator",
-                "event.category": "threat",
-            })
-            .into(),
-        )
+
+        let body_with_replacements = document
+            .to_string()
+            .replace("{date.iso}", &random_iso_date());
+
+        body.push(json!(body_with_replacements).into())
     }
 
-    client
+    let response = client
         .bulk(BulkParts::Index(index))
         .body(body)
         .send()
         .await?;
 
-    Ok(())
+    Ok(response)
 }
