@@ -1,21 +1,16 @@
-mod args;
-mod document_creation_request;
-mod ensure_index;
-mod generate_documents;
-mod handlebars;
-mod insert;
-mod local_esclient;
-mod prepare_indices;
+use core::{
+    document_creation_request::DocumentCreationRequest, generate_documents::generate_documents,
+    local_esclient::LocalElasticsearchBuilder, prepare_indices::prepare_indices,
+};
 
-use crate::args::Args;
-use crate::generate_documents::generate_documents;
-use crate::prepare_indices::prepare_indices;
 use anyhow::Result;
 use clap::Parser;
-use document_creation_request::DocumentCreationRequest;
 use elasticsearch::{auth::Credentials, http::Url};
 use linya::{Bar, Progress};
-use local_esclient::LocalElasticsearchBuilder;
+
+mod args;
+
+use args::Args;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
