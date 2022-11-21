@@ -53,19 +53,26 @@ impl<'a> EnsureIndex<'a> {
     pub async fn ensure_index(
         &self,
         index: &str,
-        payload: Option<&serde_json::Value>,
+        index_definition: Option<&serde_json::Value>,
+        append: bool,
     ) -> Result<()> {
         let index_exists = self.exists(index).await?;
 
-        if index_exists {
-            if payload.is_some() {
-                self.drop_index(index).await?;
-                self.create_index(index, payload.unwrap()).await?;
+        if append {
+            if index_exists {
+                return Ok(());
+            } else {
+                return Err(anyhow!("index does not exist, cannot append. run this command without the 'append' flag first"));
             }
-        } else if payload.is_none() {
-            return Err(anyhow!("index does not exist and it was not created!"));
-        }
+        } else {
+            if index_definition.is_some() {
+                self.drop_index(index).await?;
+                self.create_index(index, index_definition.unwrap()).await?;
+            } else {
+                return Err(anyhow!("index definition has not been provided"));
+            }
 
-        return Ok(());
+            return Ok(());
+        }
     }
 }

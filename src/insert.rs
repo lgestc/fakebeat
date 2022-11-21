@@ -3,20 +3,13 @@ use elasticsearch::{
     http::{request::JsonBody, response::Response},
     BulkParts, Elasticsearch,
 };
-use fake::{
-    faker::internet::en::{DomainSuffix, Username},
-    Fake,
-};
-use rand::Rng;
 
 use anyhow::Result;
 use serde_json::json;
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use chrono::{Duration, Utc};
-
-const FORMAT_ISO: &str = "%FT%T%z";
+use handlebars::Handlebars;
 
 // This is temporary until id's are optional
 fn generate_id() -> String {
@@ -30,50 +23,37 @@ fn generate_id() -> String {
     timestamp
 }
 
-fn random_iso_date() -> String {
-    let mut rng = rand::thread_rng();
-    let random_offset = rng.gen_range(0..30);
-
-    let dt = Utc::now() - Duration::days(random_offset);
-
-    dt.format(FORMAT_ISO).to_string()
-}
-
-fn random_username() -> String {
-    Username().fake()
-}
-
-fn random_domain() -> String {
-    DomainSuffix().fake()
-}
-
 /// Insert documents in bulk
-pub async fn insert_batch(
+pub async fn insert_batch<'a>(
     client: &Elasticsearch,
     index: &str,
-    document_template: &serde_json::Value,
+    document_template: Option<&'a serde_json::Value>,
     batch_size: usize,
+    handlebars: &'a Handlebars<'a>,
 ) -> Result<Response> {
-    let mut operations: Vec<JsonBody<serde_json::Value>> = Vec::with_capacity(batch_size * 2);
+    let mut bulk_operations: Vec<JsonBody<serde_json::Value>> = Vec::with_capacity(batch_size * 2);
 
     for _ in 0..batch_size {
         // read document from file
-        operations.push(json!({"index": {"_id": generate_id().as_str()}}).into());
+        bulk_operations.push(json!({"index": {"_id": generate_id().as_str()}}).into());
 
-        let compiled_body = document_template
-            .to_string()
-            .replace("{username}", &random_username())
-            .replace("{domain}", &random_domain())
-            .replace("{date.iso}", &random_iso_date());
+        // handlebars template for a document to insert
+        let document_template_string = document_template
+            .ok_or(anyhow::anyhow!("missing template"))?
+            .to_string();
 
-        let parsed: serde_json::Value = serde_json::from_str(&compiled_body)?;
+        let rendered_document = handlebars
+            .render_template(&document_template_string, &())
+            .unwrap();
 
-        operations.push(parsed.into());
+        let parsed_document_json: serde_json::Value = serde_json::from_str(&rendered_document)?;
+
+        bulk_operations.push(parsed_document_json.into());
     }
 
     let response = client
         .bulk(BulkParts::Index(index))
-        .body(operations)
+        .body(bulk_operations)
         .send()
         .await?;
 
