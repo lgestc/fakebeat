@@ -22,7 +22,7 @@ pub struct Args {
     #[arg(short, long, value_parser, default_value_t = 1000)]
     pub batch: usize,
 
-    /// Index to store documents in
+    /// Index to store documents in (per template)
     #[arg(short, long, value_parser, required_unless_present = "generators")]
     pub index: Vec<String>,
 
