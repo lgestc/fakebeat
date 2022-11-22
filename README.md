@@ -22,7 +22,8 @@ templates, consisting of `index` configuration and `values` for each field, like
 }
 ```
 
-Each of the values can be constructed using random helpers, listed here:
+Each of the values can be constructed using random helpers, you can check the current ones with
+`fakebeat -g`
  
 
 ## Usage
