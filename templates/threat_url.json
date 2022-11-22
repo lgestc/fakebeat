@@ -1,10 +1,10 @@
 {
   "values": {
-    "@timestamp": "{{date_range 30}}",
-    "threat.indicator.first_seen": "{{date_range}}",
+    "@timestamp": "{{DateRange 30}}",
+    "threat.indicator.first_seen": "{{DateRange}}",
     "threat.feed.name": "fakebeat_url",
     "threat.indicator.type": "url",
-    "threat.indicator.url.full": "http://{{word}}.{{word}}.{{domain}}",
+    "threat.indicator.url.full": "http://{{Word}}.{{Word}}.{{DomainSuffix}}",
     "threat.indicator.marking.tlp": "RED",
     "event.type": "indicator",
     "event.category": "threat",
@@ -18,9 +18,9 @@
         "threat.indicator.marking.tlp": { "type": "keyword" },
         "threat.feed.name": { "type": "keyword" },
         "threat.indicator.url.full": { "type": "keyword" },
-        "threat.indicator.first_seen": { "type": "date_range" },
+        "threat.indicator.first_seen": { "type": "DateRange" },
         "event.dataset": { "type": "keyword" },
-        "@timestamp": { "type": "date_range" }
+        "@timestamp": { "type": "DateRange" }
       }
     }
   }

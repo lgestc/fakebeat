@@ -175,6 +175,7 @@ dependencies = [
  "elasticsearch",
  "fake",
  "handlebars",
+ "http",
  "rand",
  "serde",
  "serde_json",
@@ -355,6 +356,7 @@ version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4d68f517805463f3a896a9d29c1d6ff09d3579ded64a7201b4069f8f9c0d52fd"
 dependencies = [
+ "http",
  "rand",
 ]
 

@@ -16,5 +16,6 @@ tokio = { version = "*", features = ["full"] }
 anyhow = "1.0.65"
 chrono = "0.4.22"
 rand = "0.8.5"
-fake = "2.5"
+fake = { version = "2.5", features = ["http"] }
 handlebars = "4.3.5"
+http = "0.2.8"

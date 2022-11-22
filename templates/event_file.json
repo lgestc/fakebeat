@@ -1,13 +1,13 @@
 {
   "values": {
-    "@timestamp": "{{date_range 30}}",
-    "file.hash.md5": "{{word}}x{{word}}"
+    "@timestamp": "{{DateRange 30}}",
+    "file.hash.md5": "{{Word}}x{{Word}}"
   },
   "index": {
     "mappings": {
       "properties": {
         "file.hash.md5": { "type": "keyword" },
-        "@timestamp": { "type": "date_range" }
+        "@timestamp": { "type": "DateRange" }
       }
     }
   }

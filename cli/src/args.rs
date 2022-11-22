@@ -14,29 +14,27 @@ pub struct Args {
     #[arg(short, long, value_parser, default_value = "changeme")]
     pub password: String,
 
-    // Url
+    // Elasticsearch host
     #[arg(long, value_parser, default_value = "http://localhost:9200")]
     pub url: String,
 
-    /// Batch size
-    /// There is no good answer on what the batch size should be.
-    /// Adjust it with a trial-and-error approach.
+    /// Batch size for inserts
     #[arg(short, long, value_parser, default_value_t = 1000)]
     pub batch: usize,
 
-    /// Index name
+    /// Index to store documents in
     #[arg(short, long, value_parser, required = true)]
     pub index: Vec<String>,
 
-    /// Template name
+    /// Template file path
     #[arg(value_parser, required = true)]
     pub template: Vec<String>,
 
-    /// How many documents
+    /// How many documents you want generated (per template)
     #[arg(short, long, value_parser, required = true)]
     pub count: Vec<usize>,
 
-    /// Append
+    /// Append to the existing indices, instead of recreating them
     #[arg(short, long, value_parser, default_value_t = false)]
     pub append: bool,
 }
