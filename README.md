@@ -24,7 +24,6 @@ templates, consisting of `index` configuration and `values` for each field, like
 
 Each of the values can be constructed using random helpers, you can check the current ones with
 `fakebeat -g`
- 
 
 ## Usage
 
@@ -35,19 +34,20 @@ Each of the values can be constructed using random helpers, you can check the cu
 ```
 Fake documents generator for Elasticsearch
 
-Usage: fakebeat [OPTIONS] --index <INDEX> --count <COUNT> <TEMPLATE>...
+Usage: fakebeat [OPTIONS] [TEMPLATE]...
 
 Arguments:
-  <TEMPLATE>...  Template file path
+  [TEMPLATE]...  Template file path
 
 Options:
   -u, --username <USERNAME>  User name [default: elastic]
   -p, --password <PASSWORD>  [default: changeme]
       --url <URL>            [default: http://localhost:9200]
   -b, --batch <BATCH>        Batch size for inserts [default: 1000]
-  -i, --index <INDEX>        Index to store documents in
+  -i, --index <INDEX>        Index to store documents in (per template)
   -c, --count <COUNT>        How many documents you want generated (per template)
   -a, --append               Append to the existing indices, instead of recreating them
+  -g, --generators           Print available generators
   -h, --help                 Print help information
   -V, --version              Print version information
 
