@@ -33,7 +33,7 @@ Options:
 
 ```
 
-See `templates/` for reference on how the template might look like.
+See the [templates](/templates/) for reference on how the template might look like.
 
 Usage example (assuming the default `url`, `password` and `username` options):
 
