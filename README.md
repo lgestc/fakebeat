@@ -4,7 +4,7 @@
 
 I often find myself in the need of doing some quick testing on how well my queries perform.
 
-This is similar to already existing makelog, but offers more flexibility.
+This is similar to already existing `makelog`, but offers more flexibility.
 
 ## Usage
 
@@ -13,14 +13,12 @@ TODO
 ## Roadmap
 
 [x] support multiple template and count parameters (avoid inline chaining and get total progress that way)
-[ ] handle potential errors
-[ ] use more Rust idioms
-
-[ ] add more generators
-[ ] support parameters in generators
+[x] support parameters in generators
+[ ] better error handling
+[x] use more Rust idioms
 [ ] support cloud setups
+[ ] add more generators
 [ ] support parallel inserts
-[ ] add more templates, adhering to ECS
 [ ] add tests
 
 [ ] configure github actions

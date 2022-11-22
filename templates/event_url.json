@@ -1,13 +1,13 @@
 {
   "values": {
-    "@timestamp": "{{date_iso}}",
+    "@timestamp": "{{date_range 30}}",
     "url.full": "http://{{word}}.{{word}}.{{domain}}"
   },
   "index": {
     "mappings": {
       "properties": {
         "url.full": { "type": "wildcard" },
-        "@timestamp": { "type": "date" }
+        "@timestamp": { "type": "date_range" }
       }
     }
   }

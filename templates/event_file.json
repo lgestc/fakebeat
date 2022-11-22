@@ -1,13 +1,13 @@
 {
   "values": {
-    "@timestamp": "{{date_iso}}",
+    "@timestamp": "{{date_range 30}}",
     "file.hash.md5": "{{word}}x{{word}}"
   },
   "index": {
     "mappings": {
       "properties": {
         "file.hash.md5": { "type": "keyword" },
-        "@timestamp": { "type": "date" }
+        "@timestamp": { "type": "date_range" }
       }
     }
   }

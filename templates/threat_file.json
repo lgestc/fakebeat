@@ -1,7 +1,7 @@
 {
   "values": {
-    "@timestamp": "{{date_iso}}",
-    "threat.indicator.first_seen": "{{date_iso}}",
+    "@timestamp": "{{date_range 30}}",
+    "threat.indicator.first_seen": "{{date_range}}",
     "threat.feed.name": "fakebeat_file",
     "threat.indicator.type": "file",
     "threat.indicator.file.hash.md5": "{{word}}x{{word}}",
@@ -18,9 +18,9 @@
         "threat.indicator.marking.tlp": { "type": "keyword" },
         "threat.feed.name": { "type": "keyword" },
         "threat.indicator.file.hash.md5": { "type": "keyword" },
-        "threat.indicator.first_seen": { "type": "date" },
+        "threat.indicator.first_seen": { "type": "date_range" },
         "event.dataset": { "type": "keyword" },
-        "@timestamp": { "type": "date" }
+        "@timestamp": { "type": "date_range" }
       }
     }
   }
