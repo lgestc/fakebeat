@@ -23,20 +23,24 @@ pub struct Args {
     pub batch: usize,
 
     /// Index to store documents in
-    #[arg(short, long, value_parser, required = true)]
+    #[arg(short, long, value_parser, required_unless_present = "generators")]
     pub index: Vec<String>,
 
     /// Template file path
-    #[arg(value_parser, required = true)]
+    #[arg(value_parser, required_unless_present = "generators")]
     pub template: Vec<String>,
 
     /// How many documents you want generated (per template)
-    #[arg(short, long, value_parser, required = true)]
+    #[arg(short, long, value_parser, required_unless_present = "generators")]
     pub count: Vec<usize>,
 
     /// Append to the existing indices, instead of recreating them
     #[arg(short, long, value_parser, default_value_t = false)]
     pub append: bool,
+
+    /// Print available generators
+    #[arg(short, long, value_parser, default_value_t = false)]
+    pub generators: bool,
 }
 
 impl<'a> TryFrom<&'a Args> for Vec<DocumentCreationRequest> {

@@ -13,7 +13,7 @@ pub async fn generate_documents<'a>(
 ) -> Result<()> {
     let mut total_generated: usize = 0;
 
-    let hb = handlebars::create();
+    let extended_handlebars = handlebars::create();
 
     for request in document_creation_requests.iter() {
         let template_file = read_to_string(&request.template).await?;
@@ -31,8 +31,14 @@ pub async fn generate_documents<'a>(
 
             local_to_generate -= batch_size;
 
-            let insertion_result =
-                insert_batch(&client, &request.index, values_definition, batch_size, &hb).await?;
+            let insertion_result = insert_batch(
+                &client,
+                &request.index,
+                values_definition,
+                batch_size,
+                &extended_handlebars.handlebars,
+            )
+            .await?;
 
             if insertion_result.status_code() != 200 {
                 eprintln!(

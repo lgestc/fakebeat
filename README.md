@@ -2,9 +2,28 @@
 
 ## About
 
-I often find myself in the need of doing some quick testing on how well my queries perform.
+This is similar to already existing `makelog`, but offers more flexibility. It is possible to define custom document
+templates, consisting of `index` configuration and `values` for each field, like this:
 
-This is similar to already existing `makelog`, but offers more flexibility.
+```
+{
+  "values": {
+    "@timestamp": "{{DateRange 30}}",
+    "file.hash.md5": "{{Word}}x{{Word}}"
+  },
+  "index": {
+    "mappings": {
+      "properties": {
+        "file.hash.md5": { "type": "keyword" },
+        "@timestamp": { "type": "DateRange" }
+      }
+    }
+  }
+}
+```
+
+Each of the values can be constructed using random helpers, listed here:
+ 
 
 ## Usage
 

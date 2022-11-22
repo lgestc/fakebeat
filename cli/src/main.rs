@@ -1,6 +1,6 @@
 use core::{
     document_creation_request::DocumentCreationRequest, generate_documents::generate_documents,
-    local_esclient::LocalElasticsearchBuilder, prepare_indices::prepare_indices,
+    handlebars, local_esclient::LocalElasticsearchBuilder, prepare_indices::prepare_indices,
 };
 
 use anyhow::Result;
@@ -15,6 +15,20 @@ use args::Args;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
+
+    if args.generators {
+        let hb = handlebars::create();
+
+        println!("Available generators:");
+
+        for generator in hb.get_generators() {
+            println!("{}", generator);
+        }
+
+        println!("");
+
+        return Ok(());
+    }
 
     let credentials = Credentials::Basic(args.username.clone(), args.password.clone());
 
