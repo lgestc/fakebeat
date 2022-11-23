@@ -50,7 +50,7 @@ Options:
   -a, --append               Append to the existing indices, instead of recreating them
   -g, --generators           Print available generators
   -h, --help                 Print help information
-  -V, --version              Print version information
+  -V, --version              Print version informationg
 
 ```
 

@@ -1,26 +1,69 @@
 {
   "values": {
     "@timestamp": "{{DateRange 30}}",
-    "threat.indicator.first_seen": "{{DateRange}}",
-    "threat.feed.name": "fakebeat_url",
-    "threat.indicator.type": "url",
-    "threat.indicator.url.full": "http://{{Word}}.{{Word}}.{{DomainSuffix}}",
-    "threat.indicator.marking.tlp": "RED",
-    "event.type": "indicator",
-    "event.category": "threat",
-    "event.dataset": "ti_*",
-    "event.kind": "enrichment"
+    "threat": {
+      "indicator": {
+        "type": "url",
+        "first_seen": "{{DateRange}}",
+        "url": {
+          "full": "http://{{Word}}.{{Word}}.{{DomainSuffix}}"
+        },
+        "marking": {
+          "tlp": "RED"
+        }
+      },
+      "feed": {
+        "name": "fakebeat_url"
+      }
+    },
+    "event": {
+      "type": "indicator",
+      "category": "threat",
+      "dataset": "ti_*",
+      "kind": "enrichment"
+    }
   },
   "index": {
     "mappings": {
       "properties": {
-        "threat.indicator.type": { "type": "keyword" },
-        "threat.indicator.marking.tlp": { "type": "keyword" },
-        "threat.feed.name": { "type": "keyword" },
-        "threat.indicator.url.full": { "type": "keyword" },
-        "threat.indicator.first_seen": { "type": "DateRange" },
-        "event.dataset": { "type": "keyword" },
-        "@timestamp": { "type": "DateRange" }
+        "@timestamp": { "type": "date" },
+
+        "threat": {
+          "properties": {
+            "indicator": {
+              "properties": {
+                "type": { "type": "keyword" },
+                "first_seen": { "type": "date" },
+                "url": {
+                  "properties": {
+                    "full": { "type": "keyword" }
+                  }
+                },
+                "marking": {
+                  "properties": {
+                    "tlp": { "type": "keyword" }
+                  }
+                }
+              }
+            },
+            "feed": {
+              "properties": {
+                "name": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+
+        "event": {
+          "properties": {
+            "type": { "type": "keyword" },
+            "category": { "type": "keyword" },
+            "dataset": { "type": "keyword" },
+            "kind": { "type": "keyword" }
+          }
+        }
       }
     }
   }
