@@ -9,12 +9,11 @@ pub async fn prepare_indices(
     document_creation_requests: &Vec<DocumentCreationRequest>,
     append: bool,
 ) -> Result<()> {
-    for request in document_creation_requests.iter() {
-        let ensure = EnsureIndex::new(&client);
+    let ensure = EnsureIndex::new(&client);
 
+    for request in document_creation_requests.iter() {
         let template_file = read_to_string(&request.template).await?;
         let template: serde_json::Value = serde_json::from_str(&template_file)?;
-
         let index_definition = template.get("index");
 
         ensure

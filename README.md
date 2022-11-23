@@ -22,7 +22,7 @@ templates, consisting of `index` configuration and `values` for each field, like
 }
 ```
 
-Each of the values can be constructed using random helpers, you can check the current ones with
+Each of the values can be constructed using random value _generators_, you can check the available options using
 `fakebeat -g`
 
 ## Usage
@@ -41,8 +41,9 @@ Arguments:
 
 Options:
   -u, --username <USERNAME>  User name [default: elastic]
-  -p, --password <PASSWORD>  [default: changeme]
-      --url <URL>            [default: http://localhost:9200]
+  -p, --password <PASSWORD>  Password [default: changeme]
+      --url <URL>            Elasticsearch host [default: http://localhost:9200]
+      --cloud <CLOUD>        Elastic cloud id. If specified, overrides the url setting
   -b, --batch <BATCH>        Batch size for inserts [default: 1000]
   -i, --index <INDEX>        Index to store documents in (per template)
   -c, --count <COUNT>        How many documents you want generated (per template)
@@ -53,25 +54,22 @@ Options:
 
 ```
 
-See the [templates](/templates/) for reference on how the template might look like.
+See the [examples](/examples/) for reference on how a template might look like.
 
 Usage example (assuming the default `url`, `password` and `username` options):
 
 Single document template:
-`fakebeat templates/event_file.json -i filebeat-file -c 10000`
+`fakebeat examples/event_file.json -i filebeat-file -c 10000`
 
-Multiple templates:
-`fakebeat templates/event_file.json -i filebeat-file -c 10000 templates/event_url.json -i filebeat-url -c 10000`
+Multiple examples:
+`fakebeat examples/event_file.json -i filebeat-file -c 10000 examples/event_url.json -i filebeat-url -c 10000`
 
 Append to indices instead of recreating:
-`fakebeat -a templates/event_file.json -i filebeat-file -c 10000 templates/event_url.json -i filebeat-url -c 10000`
+`fakebeat -a examples/event_file.json -i filebeat-file -c 10000 examples/event_url.json -i filebeat-url -c 10000`
 
 ## Roadmap
 
-[ ] better error handling
 [ ] add tests
-
-[ ] support cloud setups
 
 [ ] configure github actions
 [ ] provide mac os and linux releases

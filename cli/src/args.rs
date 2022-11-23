@@ -10,13 +10,17 @@ pub struct Args {
     #[arg(short, long, value_parser, default_value = "elastic")]
     pub username: String,
 
-    // Password
+    /// Password
     #[arg(short, long, value_parser, default_value = "changeme")]
     pub password: String,
 
-    // Elasticsearch host
+    /// Elasticsearch host
     #[arg(long, value_parser, default_value = "http://localhost:9200")]
     pub url: String,
+
+    /// Elastic cloud id. If specified, overrides the url setting
+    #[arg(long, value_parser, required = false)]
+    pub cloud: String,
 
     /// Batch size for inserts
     #[arg(short, long, value_parser, default_value_t = 1000)]

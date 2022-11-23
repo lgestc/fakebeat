@@ -5,7 +5,11 @@ use core::{
 
 use anyhow::Result;
 use clap::Parser;
-use elasticsearch::{auth::Credentials, http::Url};
+use elasticsearch::{
+    auth::Credentials,
+    http::{transport::Transport, Url},
+    Elasticsearch,
+};
 use linya::{Bar, Progress};
 
 mod args;
@@ -38,10 +42,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let document_creation_requests = Vec::<DocumentCreationRequest>::try_from(&args)?;
 
-    let client = LocalElasticsearchBuilder::default()
-        .credentials(credentials)
-        .url(url)
-        .build()?;
+    let client = if args.cloud.len() > 0 {
+        let credentials = Credentials::Basic(args.username.into(), args.password.into());
+        let transport = Transport::cloud(&args.cloud, credentials)?;
+        Elasticsearch::new(transport)
+    } else {
+        LocalElasticsearchBuilder::default()
+            .credentials(credentials)
+            .url(url)
+            .build()?
+    };
 
     println!("Setting up indices");
 
