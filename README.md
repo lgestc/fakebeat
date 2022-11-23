@@ -69,7 +69,6 @@ Append to indices instead of recreating:
 
 ## Roadmap
 
-[ ] add tests
-
-[ ] configure github actions
-[ ] provide mac os and linux releases
+[] add tests
+[] configure github actions
+[] provide mac os and linux releases
