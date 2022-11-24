@@ -1,6 +1,6 @@
 use core::{
-    document_creation_request::DocumentCreationRequest, generate_documents::generate_documents,
-    handlebars, local_esclient::LocalElasticsearchBuilder, prepare_indices::prepare_indices,
+    document_renderer, fixture::Fixture, insert_fixtures::insert_fixtures,
+    local_esclient::LocalElasticsearchBuilder, prepare_indices::prepare_indices,
 };
 
 use anyhow::Result;
@@ -21,7 +21,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
     if args.generators {
-        let hb = handlebars::create();
+        let hb = document_renderer::create();
 
         println!("Available generators:");
 
@@ -40,7 +40,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let append = args.append;
     let batch_size = args.batch;
 
-    let document_creation_requests = Vec::<DocumentCreationRequest>::try_from(&args)?;
+    let fixtures = Vec::<Fixture>::try_from(&args)?;
 
     let client = if args.cloud.len() > 0 {
         let credentials = Credentials::Basic(args.username.into(), args.password.into());
@@ -55,26 +55,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("Setting up indices");
 
-    prepare_indices(&client, &document_creation_requests, append).await?;
+    prepare_indices(&client, &fixtures, append).await?;
 
     println!("Indices ready");
 
-    let total_docs_to_generate: usize = args.count.iter().sum();
+    let total_fixtures_to_generate: usize = args.count.iter().sum();
 
     let mut progress = Progress::new();
-    let bar: Bar = progress.bar(total_docs_to_generate, "Generating documents");
+    let bar: Bar = progress.bar(total_fixtures_to_generate, "Inserting fixtures");
 
     let on_progress = Box::new(move |current_progress_value| {
         progress.set_and_draw(&bar, current_progress_value);
     });
 
-    generate_documents(
-        &client,
-        &document_creation_requests,
-        batch_size,
-        on_progress,
-    )
-    .await?;
+    insert_fixtures(&client, &fixtures, batch_size, on_progress).await?;
 
     println!("Done");
 

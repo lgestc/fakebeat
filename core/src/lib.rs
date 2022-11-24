@@ -1,7 +1,7 @@
-pub mod document_creation_request;
+pub mod fixture;
 pub mod ensure_index;
-pub mod generate_documents;
-pub mod handlebars;
+pub mod insert_fixtures;
+pub mod document_renderer;
 pub mod insert;
 pub mod local_esclient;
 pub mod prepare_indices;

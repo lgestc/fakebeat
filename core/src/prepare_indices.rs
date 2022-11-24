@@ -2,11 +2,11 @@ use anyhow::Result;
 use elasticsearch::Elasticsearch;
 use tokio::fs::read_to_string;
 
-use crate::{document_creation_request::DocumentCreationRequest, ensure_index::EnsureIndex};
+use crate::{ensure_index::EnsureIndex, fixture::Fixture};
 
 pub async fn prepare_indices(
     client: &Elasticsearch,
-    document_creation_requests: &Vec<DocumentCreationRequest>,
+    document_creation_requests: &Vec<Fixture>,
     append: bool,
 ) -> Result<()> {
     let ensure = EnsureIndex::new(&client);

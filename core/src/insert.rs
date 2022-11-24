@@ -9,7 +9,7 @@ use serde_json::json;
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use handlebars::Handlebars;
+use crate::document_renderer::DocumentRenderer;
 
 // This is temporary until id's are optional
 fn generate_id() -> String {
@@ -29,7 +29,7 @@ pub async fn insert_batch<'a>(
     index: &str,
     document_template: Option<&'a serde_json::Value>,
     batch_size: usize,
-    handlebars: &'a Handlebars<'a>,
+    renderer: &'a DocumentRenderer<'a>,
 ) -> Result<Response> {
     let mut bulk_operations: Vec<JsonBody<serde_json::Value>> = Vec::with_capacity(batch_size * 2);
 
@@ -42,9 +42,7 @@ pub async fn insert_batch<'a>(
             .ok_or(anyhow::anyhow!("missing template"))?
             .to_string();
 
-        let rendered_document = handlebars
-            .render_template(&document_template_string, &())
-            .unwrap();
+        let rendered_document = renderer.render(&document_template_string).unwrap();
 
         let parsed_document_json: serde_json::Value = serde_json::from_str(&rendered_document)?;
 

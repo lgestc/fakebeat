@@ -1,4 +1,4 @@
-use core::document_creation_request::DocumentCreationRequest;
+use core::fixture::Fixture;
 
 use clap::Parser;
 
@@ -47,11 +47,11 @@ pub struct Args {
     pub generators: bool,
 }
 
-impl<'a> TryFrom<&'a Args> for Vec<DocumentCreationRequest> {
+impl<'a> TryFrom<&'a Args> for Vec<Fixture> {
     type Error = anyhow::Error;
 
     fn try_from(value: &'a Args) -> Result<Self, Self::Error> {
-        let mut output = Vec::<DocumentCreationRequest>::new();
+        let mut output = Vec::<Fixture>::new();
 
         let indexes = value.index.len();
 
@@ -62,7 +62,7 @@ impl<'a> TryFrom<&'a Args> for Vec<DocumentCreationRequest> {
         }
 
         for i in 0..value.index.len() {
-            output.push(DocumentCreationRequest {
+            output.push(Fixture {
                 index: value
                     .index
                     .get(i)

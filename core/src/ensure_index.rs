@@ -62,14 +62,16 @@ impl<'a> EnsureIndex<'a> {
             if index_exists {
                 return Ok(());
             } else {
-                return Err(anyhow!("index does not exist, cannot append. run this command without the 'append' flag first"));
+                return Err(anyhow!("index {} does not exist, cannot append. run this command without the 'append' flag first", index));
             }
         } else {
             if index_definition.is_some() {
                 self.drop_index(index).await?;
                 self.create_index(index, index_definition.unwrap()).await?;
             } else {
-                return Err(anyhow!("index definition has not been provided"));
+                return Err(anyhow!(
+                    "index definition was not provided, check your template"
+                ));
             }
 
             return Ok(());

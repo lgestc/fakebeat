@@ -1,26 +1,26 @@
-use crate::{handlebars, insert::insert_batch};
+use crate::{document_renderer, insert::insert_batch};
 use anyhow::Result;
 use elasticsearch::Elasticsearch;
 use tokio::fs::read_to_string;
 
-use crate::document_creation_request::DocumentCreationRequest;
+use crate::fixture::Fixture;
 
-pub async fn generate_documents<'a>(
+pub async fn insert_fixtures<'a>(
     client: &'a Elasticsearch,
-    document_creation_requests: &'a Vec<DocumentCreationRequest>,
+    fixtures: &'a Vec<Fixture>,
     batch_size: usize,
     mut on_progress: Box<dyn FnMut(usize) -> ()>,
 ) -> Result<()> {
     let mut total_generated: usize = 0;
 
-    let extended_handlebars = handlebars::create();
+    let renderer = document_renderer::create();
 
-    for request in document_creation_requests.iter() {
-        let template_file = read_to_string(&request.template).await?;
+    for fixture in fixtures.iter() {
+        let template_file = read_to_string(&fixture.template).await?;
         let template: serde_json::Value = serde_json::from_str(&template_file)?;
         let values_definition = template.get("values");
 
-        let mut local_to_generate = request.count;
+        let mut local_to_generate = fixture.count;
 
         while local_to_generate > 0 {
             let batch_size = if batch_size > local_to_generate {
@@ -29,14 +29,12 @@ pub async fn generate_documents<'a>(
                 batch_size
             };
 
-            local_to_generate -= batch_size;
-
             let insertion_result = insert_batch(
                 &client,
-                &request.index,
+                &fixture.index,
                 values_definition,
                 batch_size,
-                &extended_handlebars.handlebars,
+                &renderer,
             )
             .await?;
 
@@ -44,13 +42,15 @@ pub async fn generate_documents<'a>(
                 eprintln!(
                     "could not insert documents into index {};
                     request failed with status: {} (using template file: {})",
-                    &request.index,
+                    &fixture.index,
                     insertion_result.status_code(),
-                    &request.template
+                    &fixture.template
                 );
 
                 dbg!(insertion_result);
             }
+
+            local_to_generate -= batch_size;
 
             total_generated += batch_size;
 

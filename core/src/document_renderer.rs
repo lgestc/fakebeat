@@ -9,12 +9,23 @@ use chrono::{Duration, Utc};
 
 const FORMAT_ISO: &str = "%FT%T%z";
 
-pub struct ExtendedHandlebars<'a> {
+pub struct DocumentRenderer<'a> {
     generators: Vec<String>,
-    pub handlebars: Handlebars<'a>,
+    handlebars: Handlebars<'a>,
 }
 
-impl<'a> ExtendedHandlebars<'a> {
+impl<'a> DocumentRenderer<'a> {
+    pub fn render(&self, template: &str) -> Result<String> {
+        match self.handlebars.render_template(template, &()) {
+            Ok(document_string) => Ok(document_string),
+            Err(err) => Err(anyhow::anyhow!(err)),
+        }
+    }
+
+    pub fn get_generators(&self) -> Vec<String> {
+        self.generators.clone()
+    }
+
     pub fn new() -> Self {
         let mut generators = Vec::<String>::new();
 
@@ -137,10 +148,6 @@ impl<'a> ExtendedHandlebars<'a> {
             generators,
         };
     }
-
-    pub fn get_generators(&self) -> Vec<String> {
-        self.generators.clone()
-    }
 }
 
 fn extract_arg(args: Vec<&JsonValue>, arg: usize) -> JsonValue {
@@ -150,6 +157,6 @@ fn extract_arg(args: Vec<&JsonValue>, arg: usize) -> JsonValue {
     }
 }
 
-pub fn create<'a>() -> ExtendedHandlebars<'a> {
-    ExtendedHandlebars::new()
+pub fn create<'a>() -> DocumentRenderer<'a> {
+    DocumentRenderer::new()
 }
