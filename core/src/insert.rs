@@ -29,7 +29,7 @@ pub async fn insert_batch<'a>(
     index: &str,
     document_template: Option<&'a serde_json::Value>,
     batch_size: usize,
-    renderer: &'a DocumentRenderer<'a>,
+    renderer: &mut DocumentRenderer,
 ) -> Result<Response> {
     let mut bulk_operations: Vec<JsonBody<serde_json::Value>> = Vec::with_capacity(batch_size * 2);
 

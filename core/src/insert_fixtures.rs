@@ -13,7 +13,7 @@ pub async fn insert_fixtures<'a>(
 ) -> Result<()> {
     let mut total_generated: usize = 0;
 
-    let renderer = document_renderer::create();
+    let mut renderer = document_renderer::DocumentRendererFactory::create_renderer();
 
     for fixture in fixtures.iter() {
         let template_file = read_to_string(&fixture.template).await?;
@@ -34,7 +34,7 @@ pub async fn insert_fixtures<'a>(
                 &fixture.index,
                 values_definition,
                 batch_size,
-                &renderer,
+                &mut renderer,
             )
             .await?;
 

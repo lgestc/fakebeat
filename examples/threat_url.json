@@ -1,12 +1,12 @@
 {
   "values": {
-    "@timestamp": "{{DateRange 30}}",
+    "@timestamp": "{{date()}}",
     "threat": {
       "indicator": {
         "type": "url",
-        "first_seen": "{{DateRange}}",
+        "first_seen": "{{date()}}",
         "url": {
-          "full": "http://{{Word}}.{{Word}}.{{DomainSuffix}}"
+          "full": "http://test.test"
         },
         "marking": {
           "tlp": "RED"

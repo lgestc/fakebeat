@@ -21,7 +21,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
     if args.generators {
-        let hb = document_renderer::create();
+        let hb = document_renderer::DocumentRendererFactory::create_renderer();
 
         println!("Available generators:");
 
