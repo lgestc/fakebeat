@@ -8,14 +8,14 @@ templates, consisting of `index` configuration and `values` for each field, like
 ```
 {
   "values": {
-    "@timestamp": "{{DateRange 30}}",
-    "file.hash.md5": "{{Word}}x{{Word}}"
+    "@timestamp": "{{date()}}",
+    "file.hash.md5": "{{hash()}}"
   },
   "index": {
     "mappings": {
       "properties": {
         "file.hash.md5": { "type": "keyword" },
-        "@timestamp": { "type": "DateRange" }
+        "@timestamp": { "type": "date" }
       }
     }
   }
@@ -27,7 +27,7 @@ Each of the values can be constructed using random value _generators_, you can c
 
 ## Usage
 
-`fakelog` allows you to generate fake data using [Handlebars](https://handlebarsjs.com/guide/) templates with multiple helpers, allowing random data generation.
+`fakelog` allows you to generate fake data using [Tera](https://tera.netlify.app) templates with multiple helpers, allowing random data generation.
 
 `fakelog -h` will render an overview of possible parameters, just as below:
 

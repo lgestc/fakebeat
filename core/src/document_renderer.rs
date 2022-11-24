@@ -70,14 +70,6 @@ impl DocumentRenderer {
         );
 
         self.register_generator(
-            "username",
-            Box::new(move |_: &HashMap<String, Value>| -> Result<Value> {
-                let value = to_value(Username().fake::<String>()).unwrap_or_default();
-                Ok(value)
-            }),
-        );
-
-        self.register_generator(
             "hash",
             Box::new(move |_: &HashMap<String, Value>| -> Result<Value> {
                 let value = thread_rng()
@@ -92,68 +84,79 @@ impl DocumentRenderer {
             }),
         );
 
-        // register_faker_helpers!(
-        //     // Numbers
-        //     Digit: fake::faker::number::en::Digit,
-        //     // Internet
-        //     Username: fake::faker::internet::en::Username,
-        //     DomainSuffix: fake::faker::internet::en::DomainSuffix,
-        //     IPv4: fake::faker::internet::en::IPv4,
-        //     IPv6: fake::faker::internet::en::IPv6,
-        //     IP: fake::faker::internet::en::IP,
-        //     MACAddress: fake::faker::internet::en::MACAddress,
-        //     FreeEmail: fake::faker::internet::en::FreeEmail,
-        //     SafeEmail: fake::faker::internet::en::SafeEmail,
-        //     FreeEmailProvider: fake::faker::internet::en::FreeEmailProvider,
-        //     // HTTP
-        //     // RfcStatusCode: fake::faker::http::RfcStatusCode,
-        //     // ValidStatusCode: fake::faker::http::ValidStatusCode,
-        //     // Lorem ipsum
-        //     Word: fake::faker::lorem::en::Word,
-        //     // Name
-        //     FirstName: fake::faker::name::en::FirstName,
-        //     LastName: fake::faker::name::en::LastName,
-        //     Title: fake::faker::name::en::Title,
-        //     Suffix: fake::faker::name::en::Suffix,
-        //     Name: fake::faker::name::en::Name,
-        //     NameWithTitle: fake::faker::name::en::NameWithTitle,
-        //     //Filesystem
-        //     FilePath: fake::faker::filesystem::en::FilePath,
-        //     FileName: fake::faker::filesystem::en::FileName,
-        //     FileExtension: fake::faker::filesystem::en::FileExtension,
-        //     DirPath: fake::faker::filesystem::en::DirPath,
-        //     // Company
-        //     CompanySuffix: fake::faker::company::en::CompanySuffix,
-        //     CompanyName: fake::faker::company::en::CompanyName,
-        //     Buzzword: fake::faker::company::en::Buzzword,
-        //     BuzzwordMiddle: fake::faker::company::en::BuzzwordMiddle,
-        //     BuzzwordTail: fake::faker::company::en::BuzzwordTail,
-        //     CatchPhase: fake::faker::company::en::CatchPhase,
-        //     BsVerb: fake::faker::company::en::BsVerb,
-        //     BsAdj: fake::faker::company::en::BsAdj,
-        //     BsNoun: fake::faker::company::en::BsNoun,
-        //     Bs: fake::faker::company::en::Bs,
-        //     Profession: fake::faker::company::en::Profession,
-        //     Industry: fake::faker::company::en::Industry,
-        //     // Address
-        //     CityPrefix: fake::faker::address::en::CityPrefix,
-        //     CitySuffix: fake::faker::address::en::CitySuffix,
-        //     CityName: fake::faker::address::en::CityName,
-        //     CountryName: fake::faker::address::en::CountryName,
-        //     CountryCode: fake::faker::address::en::CountryCode,
-        //     StreetSuffix: fake::faker::address::en::StreetSuffix,
-        //     StreetName: fake::faker::address::en::StreetName,
-        //     TimeZone: fake::faker::address::en::TimeZone,
-        //     StateName: fake::faker::address::en::StateName,
-        //     StateAbbr: fake::faker::address::en::StateAbbr,
-        //     SecondaryAddressType: fake::faker::address::en::SecondaryAddressType,
-        //     SecondaryAddress: fake::faker::address::en::SecondaryAddress,
-        //     ZipCode: fake::faker::address::en::ZipCode,
-        //     PostCode: fake::faker::address::en::PostCode,
-        //     BuildingNumber: fake::faker::address::en::BuildingNumber,
-        //     Latitude: fake::faker::address::en::Latitude,
-        //     Longitude: fake::faker::address::en::Longitude
-        // );
+        macro_rules! register_faker_generators {
+            (    $($i:ident : $p:path), *) => {
+                    $(
+                        self.register_generator(stringify!($i), Box::new(move |_: &HashMap<String, Value>| -> Result<Value> {
+                            let value = to_value($p().fake::<String>()).unwrap_or_default();
+                            Ok(value)
+                        }));
+                    )*
+                }
+            }
+
+        register_faker_generators!(
+            // Numbers
+            digit: fake::faker::number::en::Digit,
+            // Internet
+            username: fake::faker::internet::en::Username,
+            domainsuffix: fake::faker::internet::en::DomainSuffix,
+            ipv4: fake::faker::internet::en::IPv4,
+            ipv6: fake::faker::internet::en::IPv6,
+            ip: fake::faker::internet::en::IP,
+            macaddress: fake::faker::internet::en::MACAddress,
+            freeemail: fake::faker::internet::en::FreeEmail,
+            safeemail: fake::faker::internet::en::SafeEmail,
+            freeemailprovider: fake::faker::internet::en::FreeEmailProvider,
+            // HTTP
+            // rfcstatuscode: fake::faker::http::RfcStatusCode,
+            // validstatuscode: fake::faker::http::ValidStatusCode,
+            // Lorem ipsum
+            word: fake::faker::lorem::en::Word,
+            // Name
+            firstname: fake::faker::name::en::FirstName,
+            lastname: fake::faker::name::en::LastName,
+            title: fake::faker::name::en::Title,
+            suffix: fake::faker::name::en::Suffix,
+            name: fake::faker::name::en::Name,
+            namewithtitle: fake::faker::name::en::NameWithTitle,
+            //Filesystem
+            filepath: fake::faker::filesystem::en::FilePath,
+            filename: fake::faker::filesystem::en::FileName,
+            fileextension: fake::faker::filesystem::en::FileExtension,
+            dirpath: fake::faker::filesystem::en::DirPath,
+            // Company
+            companysuffix: fake::faker::company::en::CompanySuffix,
+            companyname: fake::faker::company::en::CompanyName,
+            buzzword: fake::faker::company::en::Buzzword,
+            buzzwordmiddle: fake::faker::company::en::BuzzwordMiddle,
+            buzzwordtail: fake::faker::company::en::BuzzwordTail,
+            catchphase: fake::faker::company::en::CatchPhase,
+            bsverb: fake::faker::company::en::BsVerb,
+            bsadj: fake::faker::company::en::BsAdj,
+            bsnoun: fake::faker::company::en::BsNoun,
+            bs: fake::faker::company::en::Bs,
+            profession: fake::faker::company::en::Profession,
+            industry: fake::faker::company::en::Industry,
+            // Address
+            cityprefix: fake::faker::address::en::CityPrefix,
+            citysuffix: fake::faker::address::en::CitySuffix,
+            cityname: fake::faker::address::en::CityName,
+            countryname: fake::faker::address::en::CountryName,
+            countrycode: fake::faker::address::en::CountryCode,
+            streetsuffix: fake::faker::address::en::StreetSuffix,
+            streetname: fake::faker::address::en::StreetName,
+            timezone: fake::faker::address::en::TimeZone,
+            statename: fake::faker::address::en::StateName,
+            stateabbr: fake::faker::address::en::StateAbbr,
+            secondaryaddresstype: fake::faker::address::en::SecondaryAddressType,
+            secondaryaddress: fake::faker::address::en::SecondaryAddress,
+            zipcode: fake::faker::address::en::ZipCode,
+            postcode: fake::faker::address::en::PostCode,
+            buildingnumber: fake::faker::address::en::BuildingNumber,
+            latitude: fake::faker::address::en::Latitude,
+            longitude: fake::faker::address::en::Longitude
+        );
     }
 
     fn new() -> Self {

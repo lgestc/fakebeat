@@ -6,7 +6,7 @@
         "type": "url",
         "first_seen": "{{date()}}",
         "url": {
-          "full": "http://test.test"
+          "full": "http://{{domainsuffix()}}.{{domainsuffix()}}"
         },
         "marking": {
           "tlp": "RED"
