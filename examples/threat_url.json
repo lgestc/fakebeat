@@ -13,7 +13,7 @@
         }
       },
       "feed": {
-        "name": "fakebeat_url"
+        "name": "fakebeat_{{random_value(options='url|file|host')}}"
       }
     },
     "event": {

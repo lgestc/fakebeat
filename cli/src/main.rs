@@ -21,12 +21,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
     if args.generators {
-        let hb = document_renderer::DocumentRendererFactory::create_renderer();
+        let renderer = document_renderer::DocumentRendererFactory::create_renderer();
 
-        println!("Available generators:");
+        println!("Available generators:\n");
 
-        for generator in hb.get_generators() {
-            println!("{}", generator);
+        for (name, desc) in renderer.get_generators() {
+            println!("{} - {}", name, desc);
         }
 
         println!("");

@@ -2,7 +2,7 @@ use core::fixture::Fixture;
 
 use clap::Parser;
 
-/// Generates random Elasticsearch documents based on Handlebars templates
+/// Generates random Elasticsearch documents based on Tera templates
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
@@ -19,7 +19,7 @@ pub struct Args {
     pub url: String,
 
     /// Elastic cloud id. If specified, overrides the url setting
-    #[arg(long, value_parser, required = false)]
+    #[arg(long, value_parser, default_value = "")]
     pub cloud: String,
 
     /// Batch size for inserts

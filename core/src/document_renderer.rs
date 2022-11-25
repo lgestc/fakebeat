@@ -1,10 +1,7 @@
 use std::collections::HashMap;
 
-use fake::{
-    faker::{boolean::en::Boolean, internet::en::Username},
-    Fake,
-};
-use rand::{distributions::Alphanumeric, thread_rng, Rng};
+use fake::Fake;
+use rand::{distributions::Alphanumeric, seq::SliceRandom, thread_rng, Rng};
 
 use chrono::{Duration, Utc};
 
@@ -14,7 +11,7 @@ use tera::{Context, Function, Result, Tera, Value};
 const FORMAT_ISO: &str = "%FT%T%z";
 
 pub struct DocumentRenderer {
-    generators: Vec<String>,
+    generators: HashMap<String, String>,
     tera: Tera,
 }
 
@@ -28,25 +25,26 @@ impl DocumentRenderer {
         }
     }
 
-    pub fn get_generators(&self) -> Vec<String> {
+    pub fn get_generators(&self) -> HashMap<String, String> {
         self.generators.clone()
     }
 
-    fn register_generator<F: Function + 'static>(&mut self, name: &str, function: F) {
+    fn register_generator<F: Function + 'static>(&mut self, name: &str, desc: &str, function: F) {
         self.tera.register_function(name, function);
-        self.generators.push(name.to_owned());
+        self.generators.insert(name.to_owned(), desc.to_owned());
     }
 
     fn register_generators(&mut self) {
         self.register_generator(
             "date",
+            "Generates random date. Optional negative offset can be passed to specify the amount of days to be subtracted, via 'sub_rnd_days' param.",
             Box::new(move |args: &HashMap<String, Value>| -> Result<Value> {
-                match args.get("days_back") {
-                    Some(days_back) => match from_value::<i64>(days_back.clone()) {
-                        Ok(days_back) => {
+                match args.get("sub_rnd_days") {
+                    Some(sub_rnd_days) => match from_value::<i64>(sub_rnd_days.clone()) {
+                        Ok(sub_rnd_days) => {
                             let mut rng = rand::thread_rng();
 
-                            let random_offset = rng.gen_range(0..days_back);
+                            let random_offset = rng.gen_range(0..sub_rnd_days);
                             let dt = Utc::now() - Duration::days(random_offset);
 
                             Ok(to_value(dt.format(FORMAT_ISO).to_string()).unwrap())
@@ -63,6 +61,7 @@ impl DocumentRenderer {
 
         self.register_generator(
             "now",
+            "Current date",
             Box::new(move |_: &HashMap<String, Value>| -> Result<Value> {
                 let now = Utc::now().format(FORMAT_ISO);
                 Ok(to_value(now.to_string()).unwrap_or_default())
@@ -71,6 +70,7 @@ impl DocumentRenderer {
 
         self.register_generator(
             "hash",
+            "16-character long alpha-num hash",
             Box::new(move |_: &HashMap<String, Value>| -> Result<Value> {
                 let value = thread_rng()
                     .sample_iter(&Alphanumeric)
@@ -84,10 +84,36 @@ impl DocumentRenderer {
             }),
         );
 
+        self.register_generator(
+            "random_value",
+            "Get random value from set configured with the 'options' parameter, eg. options='a|b|c'",
+            move |args: &HashMap<String, Value>| -> Result<Value> {
+                let mut rng = thread_rng();
+
+                match args.get("options") {
+                    Some(value) => {
+                        if let Some(options) = value.as_str() {
+                            let options: Vec<&str> = options.split("|").collect();
+                            let random_value = options.choose(&mut rng);
+
+                            if let Some(random_value) = random_value {
+                                Ok(random_value.to_owned().into())
+                            } else {
+                                Ok("".into())
+                            }
+                        } else {
+                            Ok("".into())
+                        }
+                    }
+                    None => Ok("".into()),
+                }
+            },
+        );
+
         macro_rules! register_faker_generators {
-            (    $($i:ident : $p:path), *) => {
+            (    $($i:ident: $p:path), *) => {
                     $(
-                        self.register_generator(stringify!($i), Box::new(move |_: &HashMap<String, Value>| -> Result<Value> {
+                        self.register_generator(stringify!($i), stringify!($p), Box::new(move |_: &HashMap<String, Value>| -> Result<Value> {
                             let value = to_value($p().fake::<String>()).unwrap_or_default();
                             Ok(value)
                         }));
@@ -108,9 +134,6 @@ impl DocumentRenderer {
             freeemail: fake::faker::internet::en::FreeEmail,
             safeemail: fake::faker::internet::en::SafeEmail,
             freeemailprovider: fake::faker::internet::en::FreeEmailProvider,
-            // HTTP
-            // rfcstatuscode: fake::faker::http::RfcStatusCode,
-            // validstatuscode: fake::faker::http::ValidStatusCode,
             // Lorem ipsum
             word: fake::faker::lorem::en::Word,
             // Name
@@ -162,7 +185,7 @@ impl DocumentRenderer {
     fn new() -> Self {
         let tera = Tera::default();
 
-        let generators = Vec::<String>::new();
+        let generators = HashMap::<String, String>::new();
 
         return Self { tera, generators };
     }
