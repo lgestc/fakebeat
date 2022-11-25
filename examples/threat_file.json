@@ -3,17 +3,19 @@
     "@timestamp": "{{date()}}",
     "threat": {
       "indicator": {
-        "type": "url",
-        "first_seen": "{{date()}}",
-        "url": {
-          "full": "http://{{domainsuffix()}}.{{domainsuffix()}}"
+        "type": "file",
+        "first_seen": "{{date(sub_rnd_days=30)}}",
+        "file": {
+          "hash": {
+            "md5": "{{hash()}}"
+          }
         },
         "marking": {
           "tlp": "RED"
         }
       },
       "feed": {
-        "name": "fakebeat_{{random_value(options='url|domain')}}"
+        "name": "fakebeat_{{random_value(options='file|host')}}"
       }
     },
     "event": {
@@ -34,9 +36,15 @@
               "properties": {
                 "type": { "type": "keyword" },
                 "first_seen": { "type": "date" },
-                "url": {
+                "file": {
                   "properties": {
-                    "full": { "type": "keyword" }
+                    "hash": {
+                      "properties": {
+                        "md5": {
+                          "type": "keyword"
+                        }
+                      }
+                    }
                   }
                 },
                 "marking": {
