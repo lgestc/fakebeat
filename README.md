@@ -16,23 +16,88 @@ Define custom document templates, consisting of `index` configuration and `value
 {
   "values": {
     "@timestamp": "{{date()}}",
-    "file.hash.md5": "{{hash()}}"
+    "threat": {
+      "indicator": {
+        "type": "file",
+        "first_seen": "{{date(sub_rnd_days=30)}}",
+        "file": {
+          "hash": {
+            "md5": "{{hash()}}"
+          }
+        },
+        "marking": {
+          "tlp": "RED"
+        }
+      },
+      "feed": {
+        "name": "fakebeat_{{random_value(options='file|host')}}"
+      }
+    },
+    "event": {
+      "type": "indicator",
+      "category": "threat",
+      "dataset": "ti_*",
+      "kind": "enrichment"
+    }
   },
   "index": {
     "mappings": {
       "properties": {
-        "file.hash.md5": { "type": "keyword" },
-        "@timestamp": { "type": "date" }
+        "@timestamp": { "type": "date" },
+
+        "threat": {
+          "properties": {
+            "indicator": {
+              "properties": {
+                "type": { "type": "keyword" },
+                "first_seen": { "type": "date" },
+                "file": {
+                  "properties": {
+                    "hash": {
+                      "properties": {
+                        "md5": {
+                          "type": "keyword"
+                        }
+                      }
+                    }
+                  }
+                },
+                "marking": {
+                  "properties": {
+                    "tlp": { "type": "keyword" }
+                  }
+                }
+              }
+            },
+            "feed": {
+              "properties": {
+                "name": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+
+        "event": {
+          "properties": {
+            "type": { "type": "keyword" },
+            "category": { "type": "keyword" },
+            "dataset": { "type": "keyword" },
+            "kind": { "type": "keyword" }
+          }
+        }
       }
     }
   }
 }
+
 ```
 
-Each of the _values_ can be constructed using random value _generators_. You can check the available options using
-`fakebeat -g`.
+`fakelog` allows you to generate fake data using [Tera](https://tera.netlify.app) templates.
 
-`fakelog` allows you to generate fake data using [Tera](https://tera.netlify.app) templates with multiple helpers, allowing random data generation.
+Each of the _values_ can be constructed using random value _generators_. You can check the available generators using
+`fakebeat -g`. Generated values can be combined and used in conditional statements as well - see the Tera manual for reference on what is possible with the templating.
 
 Once your template is ready, save it in a file and run `filebeat you_file.json --index indexName --count 100` to
 create 100 documents within your local ES instance. It is also possible to use different hosts or cloud deployments,
