@@ -1,5 +1,5 @@
 [package]
-name = "core"
+name = "fakebeat_core"
 edition = "2021"
 version.workspace = true
 authors.workspace = true

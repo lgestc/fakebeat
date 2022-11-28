@@ -1,4 +1,4 @@
-use core::fixture::Fixture;
+use fakebeat_core::fixture::Fixture;
 
 use clap::Parser;
 

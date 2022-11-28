@@ -1,4 +1,4 @@
-use core::{
+use fakebeat_core::{
     document_renderer, fixture::Fixture, insert_fixtures::insert_fixtures,
     local_esclient::LocalElasticsearchBuilder, prepare_indices::prepare_indices,
 };
