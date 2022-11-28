@@ -202,3 +202,44 @@ impl DocumentRendererFactory {
         document_renderer
     }
 }
+
+#[cfg(test)]
+mod tests {
+    const FORMAT_ISO: &str = "%FT%T%z";
+
+    use chrono::Utc;
+
+    use crate::document_renderer::DocumentRendererFactory;
+
+    #[test]
+    fn it_replaces_the_generators_with_values() {
+        let mut renderer = DocumentRendererFactory::create_renderer();
+
+        let result = renderer
+            .render(
+                r#"{
+            "values": {
+              "@timestamp": "{{date()}}",
+              "file.hash.md5": "{{hash()}}"
+            },
+            "index": {
+              "mappings": {
+                "properties": {
+                  "file.hash.md5": { "type": "keyword" },
+                  "@timestamp": { "type": "date" }
+                }
+              }
+            }
+          }
+        "#,
+            )
+            .unwrap();
+
+        assert_eq!(result.contains("date()"), false);
+        assert_eq!(result.contains("hash()"), false);
+
+        let dt = Utc::now();
+
+        assert_eq!(result.contains(&dt.format(FORMAT_ISO).to_string()), true);
+    }
+}
