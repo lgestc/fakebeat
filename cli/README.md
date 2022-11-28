@@ -2,15 +2,17 @@
 
 ## About
 
-This is similar to already existing `makelog`, but offers more flexibility.
+Fakebeat allows you to generate fake data with ease using [Tera](https://tera.netlify.app) templates.
 
-1. Configure your indices
+This is similar to already existing `elastic/makelog`, but offers far more flexibility.
+
+1. Configure your mappings
 2. Setup document value generation using our flexible templating engine
-3. Generate your fixtures
+3. Generate your fixtures based on the template with the handy CLI utility.
 
 ## Usage
 
-Define custom document templates, consisting of `index` configuration and `values` for each field, like this:
+Define custom document templates (as text files), consisting of `index` configuration and `values` for each field, like this:
 
 ```
 {
@@ -94,37 +96,14 @@ Define custom document templates, consisting of `index` configuration and `value
 
 ```
 
-`fakelog` allows you to generate fake data using [Tera](https://tera.netlify.app) templates.
+Note: you can copy the `index` section straight from Kibana, it accepts anything permitted with [create index api](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html)
 
 Each of the _values_ can be constructed using random value _generators_. You can check the available generators using
 `fakebeat -g`. Generated values can be combined and used in conditional statements as well - see the Tera manual for reference on what is possible with the templating.
 
-Once your template is ready, save it in a file and run `filebeat you_file.json --index indexName --count 100` to
+Once your template is ready, save it in a file and run `filebeat you_file.json --index index-name --count 100` to
 create 100 documents within your local ES instance. It is also possible to use different hosts or cloud deployments,
-consult `fakelog -h` for how to do that.
-
-```
-Fake documents generator for Elasticsearch
-
-Usage: fakebeat [OPTIONS] [TEMPLATE]...
-
-Arguments:
-  [TEMPLATE]...  Template file path
-
-Options:
-  -u, --username <USERNAME>  User name [default: elastic]
-  -p, --password <PASSWORD>  Password [default: changeme]
-      --url <URL>            Elasticsearch host [default: http://localhost:9200]
-      --cloud <CLOUD>        Elastic cloud id. If specified, overrides the url setting
-  -b, --batch <BATCH>        Batch size for inserts [default: 1000]
-  -i, --index <INDEX>        Index to store documents in (per template)
-  -c, --count <COUNT>        How many documents you want generated (per template)
-  -a, --append               Append to the existing indices, instead of recreating them
-  -g, --generators           Print available generators
-  -h, --help                 Print help information
-  -V, --version              Print version information
-
-```
+consult `fakebeat -h` for how to do that.
 
 See the [examples](/examples/) for reference on how a template might look like.
 
