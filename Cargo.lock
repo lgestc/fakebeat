@@ -373,7 +373,7 @@ dependencies = [
 
 [[package]]
 name = "fakebeat"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "clap",
@@ -385,7 +385,7 @@ dependencies = [
 
 [[package]]
 name = "fakebeat_core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "chrono",
