@@ -2,8 +2,15 @@
 
 ## About
 
-This is similar to already existing `makelog`, but offers more flexibility. It is possible to define custom document
-templates, consisting of `index` configuration and `values` for each field, like this:
+This is similar to already existing `makelog`, but offers more flexibility.
+
+1. Configure your indices
+2. Setup document value generation using our flexible templating engine
+3. Generate your fixtures
+
+## Usage
+
+Define custom document templates, consisting of `index` configuration and `values` for each field, like this:
 
 ```
 {
@@ -22,14 +29,14 @@ templates, consisting of `index` configuration and `values` for each field, like
 }
 ```
 
-Each of the values can be constructed using random value _generators_, you can check the available options using
-`fakebeat -g`
-
-## Usage
+Each of the _values_ can be constructed using random value _generators_. You can check the available options using
+`fakebeat -g`.
 
 `fakelog` allows you to generate fake data using [Tera](https://tera.netlify.app) templates with multiple helpers, allowing random data generation.
 
-`fakelog -h` will render an overview of possible parameters, just as below:
+Once your template is ready, save it in a file and run `filebeat you_file.json --index indexName --count 100` to
+create 100 documents within your local ES instance. It is also possible to use different hosts or cloud deployments,
+consult `fakelog -h` for how to do that.
 
 ```
 Fake documents generator for Elasticsearch
@@ -62,13 +69,7 @@ Single document template:
 `fakebeat examples/event_file.json -i filebeat-file -c 10000`
 
 Multiple examples:
-`fakebeat examples/event_file.json -i filebeat-file -c 10000 examples/event_url.json -i filebeat-url -c 10000`
+`fakebeat examples/event_file.json -i filebeat-file -c 10000 examples/threat_url.json -i filebeat-url -c 10000`
 
 Append to indices instead of recreating:
-`fakebeat -a examples/event_file.json -i filebeat-file -c 10000 examples/event_url.json -i filebeat-url -c 10000`
-
-## Roadmap
-
-[] add tests
-[] configure github actions
-[] provide mac os and linux releases
+`fakebeat -a examples/event_file.json -i filebeat-file -c 10000 examples/threat_url.json -i filebeat-url -c 10000`

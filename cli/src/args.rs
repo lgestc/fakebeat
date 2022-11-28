@@ -6,6 +6,10 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
+    /// Print available generators
+    #[arg(short, long, value_parser, default_value_t = false)]
+    pub generators: bool,
+
     /// User name
     #[arg(short, long, value_parser, default_value = "elastic")]
     pub username: String,
@@ -19,8 +23,12 @@ pub struct Args {
     pub url: String,
 
     /// Elastic cloud id. If specified, overrides the url setting
-    #[arg(long, value_parser, default_value = "")]
-    pub cloud: String,
+    #[arg(long, value_parser)]
+    pub cloud: Option<String>,
+
+    /// How many documents you want generated (per template)
+    #[arg(short, long, value_parser, required_unless_present = "generators")]
+    pub count: Vec<usize>,
 
     /// Batch size for inserts
     #[arg(short, long, value_parser, default_value_t = 1000)]
@@ -34,17 +42,9 @@ pub struct Args {
     #[arg(value_parser, required_unless_present = "generators")]
     pub template: Vec<String>,
 
-    /// How many documents you want generated (per template)
-    #[arg(short, long, value_parser, required_unless_present = "generators")]
-    pub count: Vec<usize>,
-
     /// Append to the existing indices, instead of recreating them
     #[arg(short, long, value_parser, default_value_t = false)]
     pub append: bool,
-
-    /// Print available generators
-    #[arg(short, long, value_parser, default_value_t = false)]
-    pub generators: bool,
 }
 
 impl<'a> TryFrom<&'a Args> for Vec<Fixture> {

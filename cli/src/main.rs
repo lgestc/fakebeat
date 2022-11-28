@@ -42,9 +42,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let fixtures = Vec::<Fixture>::try_from(&args)?;
 
-    let client = if args.cloud.len() > 0 {
+    let client = if let Some(cloud) = args.cloud {
         let credentials = Credentials::Basic(args.username.into(), args.password.into());
-        let transport = Transport::cloud(&args.cloud, credentials)?;
+        let transport = Transport::cloud(&cloud, credentials)?;
         Elasticsearch::new(transport)
     } else {
         LocalElasticsearchBuilder::default()
