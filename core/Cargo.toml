@@ -19,4 +19,4 @@ chrono = "0.4.22"
 rand = "0.8.5"
 fake = { version = "2.5", features = ["http"] }
 http = "0.2.8"
-tera = { version = "1", default-features = false }
+tera = { version = "1", default-features = false, features = ["builtins"] }

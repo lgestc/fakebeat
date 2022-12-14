@@ -110,6 +110,39 @@ impl DocumentRenderer {
             },
         );
 
+        self.register_generator(
+            "chance",
+            "Roll a dice within range, if 0 is rolled then return first option, else 2nd",
+            move |args: &HashMap<String, Value>| -> Result<Value> {
+                let mut rng = thread_rng();
+                let range = args.get("range").unwrap().as_u64().unwrap();
+                let options = args.get("options").unwrap().as_str().unwrap();
+                let chance = rng.gen_range(0..range);
+                let options: Vec<&str> = options.split("|").collect();
+
+                if chance == 0 {
+                    Ok(options.get(0).unwrap().to_owned().into())
+                } else {
+                    Ok(options.get(1).unwrap().to_owned().into())
+                }
+            },
+        );
+        self.register_generator(
+            "randomint",
+            "Roll a dice within a range",
+            move |args: &HashMap<String, Value>| -> Result<Value> {
+                let mut rng = thread_rng();
+                let range = args
+                    .get("range")
+                    .unwrap_or(&Value::String("0".to_owned()))
+                    .as_u64()
+                    .unwrap();
+                let range = rng.gen_range(0..range);
+
+                Ok(range.to_string().into())
+            },
+        );
+
         macro_rules! register_faker_generators {
             (    $($i:ident: $p:path), *) => {
                     $(

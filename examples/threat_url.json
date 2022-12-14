@@ -6,8 +6,9 @@
         "type": "url",
         "first_seen": "{{date()}}",
         "url": {
-          "full": "http://{{domainsuffix()}}.{{domainsuffix()}}"
+          "full": "http://{{get_random(end=get_env(name='EVENTS')|int)}}.com"
         },
+        "ip": "{{ipv4()}}",
         "marking": {
           "tlp": "RED"
         }
@@ -33,6 +34,7 @@
             "indicator": {
               "properties": {
                 "type": { "type": "keyword" },
+                "ip": { "type": "ip" },
                 "first_seen": { "type": "date" },
                 "url": {
                   "properties": {

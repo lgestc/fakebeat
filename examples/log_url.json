@@ -1,0 +1,32 @@
+{
+  "values": {
+    "@timestamp": "{{date()}}",
+
+    "url": {
+      "full": "http://{{get_random(end=get_env(name='EVENTS')|int)}}.com"
+    },
+
+    "source": {
+      "ip": "{{ipv4()}}"
+    }
+  },
+  "index": {
+    "mappings": {
+      "properties": {
+        "@timestamp": { "type": "date" },
+
+        "url": {
+          "properties": {
+            "full": { "type": "keyword" }
+          }
+        },
+
+        "source": {
+          "properties": {
+            "ip": { "type": "ip" }
+          }
+        }
+      }
+    }
+  }
+}
